@@ -1,0 +1,218 @@
+<apex:page standardController="Shipment_Info__c" renderAs="PDF">
+
+    <apex:stylesheet value="{!URLFOR($Resource.XedeDefaultAssets,'css/reset.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.XedeDefaultAssets,'css/style.css')}" />
+    <head>
+    <style>
+        body {
+            font-size:13px;
+        }
+        
+        #document {
+            margin:auto;
+            width:100%;
+ 
+            overflow:auto;
+        }
+        #body {
+            width:99%;
+            margin:auto;
+        }
+        
+        #header {
+            margin-bottom:10px;
+        }
+        #header .title {
+            font-size:18px;
+            text-align:center;
+        }
+        
+        #customer-col-1, #customer-col-2{
+            
+            border-bottom:1px solid #000;
+            border-top:1px solid #000;
+            height:100px;
+            float:left;
+            
+        }
+        #customer-col-1 {
+            width:50%;
+            border-right:1px solid #000;
+        }
+        #customer-col-2 {
+            width:49%;
+            
+        }
+        
+        #product {
+            height:100px;
+            border-bottom:1px solid #000;
+            float:left;
+            width:100%;
+        }
+        
+        #components {
+            border-bottom:1px solid #000;
+            float:left;
+            width:100%;
+        }
+        
+        #footer {
+            float:left;
+            width:100%;
+            margin-top:100px;
+        }
+        
+        #footer .box{
+            border:1px solid #000;
+            margin-top:5px;
+            overflow:auto;
+            float:left;
+            padding:15px;
+            
+        }
+        #footer .box .col1, #footer .box .col2{
+            width:50%;
+            float:left;
+        }   
+        
+        #footer .info{
+            font-size:25px;
+            text-align:center;
+            width:100%;
+            display:inline-block;
+        }
+        
+        .signature {
+            margin-top:20px;
+            float:left;
+        }
+        .section-title {
+            margin-bottom:5px;
+            font-size:15px;
+        }
+        .customer-section , .shipping-section{
+            
+            margin-left:10px;
+        }
+        
+        .sub-section {
+            border-bottom:1px solid #000;
+            padding-bottom:3px;
+            
+        }
+        .field {
+            margin-left:5px;
+            margin-bottom:5px;
+            
+        }
+        
+        .list-item{
+            margin-top:10px;
+            padding-left:5px;
+            
+            height:25px;
+        }
+        .fine {
+            font-size:10px;
+        }
+        .signature2 {
+            margin-right:29px;
+        }   
+    </style>
+    </head>
+    <div id="document">
+        <div id ="header">
+            <div class="title">Service Action Form</div>
+        </div>
+        <div id="body">
+            <div id="customer-col-1">
+                <div class="section-title">Customer</div>
+                <div class="customer-section">
+                    <ul>
+                        <li>{!Shipment_Info__c.Customer_Name__c}</li>
+                        <li>{!Shipment_Info__c.Customer_Address__c}</li>
+                        <li>{!Shipment_Info__c.Customer_City__c} {!Shipment_Info__c.Customer_State__c} {!Shipment_Info__c.Customer_Zip_Code__c}</li>
+                        <li>{!Shipment_Info__c.Customer_Phone__c}</li>
+                    </ul>
+                </div>
+            </div>
+            <div id="customer-col-2">
+                <div class="sub-section">
+                    <span class="field">Service Technician : {!Shipment_Info__c.Service_Technician__c}</span>
+                </div>
+                <div class="section-title">Ship To</div>
+                <div class="shipping-section">
+                    <ul>
+                        <li>{!Shipment_Info__c.Ship_To_Name__c}</li>
+                        <li>{!Shipment_Info__c.Shipping_Address__c}</li>
+                        <li>{!Shipment_Info__c.Shipping_City__c} {!Shipment_Info__c.Shipping_State__c} {!Shipment_Info__c.Shipping_Zip_Code__c}</li>
+                        <li>{!Shipment_Info__c.Shipping_Phone__c}</li>
+                    </ul>
+                </div>
+            </div>
+            <div id="product" >
+                <ul>
+                    <li>Product: {!Shipment_Info__c.Product__c}</li>
+                    <li>Concern: {!Shipment_Info__c.Concern__c}</li>
+                    <li>Manufacture Date: {!Shipment_Info__c.Manufacture_Date__c}</li>
+                    <li>
+                        Purchase Date:
+                            <apex:outputText value="{0, date, EEE, MMM dd, yyyy }">
+                            <apex:param value="{!Shipment_Info__c.Purchase_Date__c}"/>
+                        </apex:outputText>
+                     </li>
+                </ul>
+            </div>
+            <div id="components">
+                <apex:dataTable var="component" value="{!Shipment_Info__c.Shipment_Info_Components__r}">
+                    <apex:column width="10%">
+                        <apex:facet name="header">Quantity</apex:facet>
+                        <div class="list-item">{!component.Quantity__c}</div>
+                     </apex:column>
+                     <apex:column width="32%">
+                        <apex:facet name="header">Component</apex:facet>
+                        <div class="list-item">{!component.Name}</div>
+                     </apex:column>
+                     <apex:column width="30%">
+                        <apex:facet name="header">Description</apex:facet>
+                        <div class="list-item">{!component.Part_Description__c}</div>
+                     </apex:column>
+                      <apex:column width="15%">
+                        <apex:facet name="header">Used for Repair</apex:facet>
+                        <div style="height:25px; width:50px; border:1px solid #c9c9c9">&nbsp;</div>
+                     </apex:column>
+                      <apex:column width="17%">
+                        <apex:facet name="header">Returned Unused</apex:facet>
+                        <div class="list-item" style="width:50px; border:1px solid #c9c9c9">&nbsp;</div>
+                     </apex:column>
+                </apex:dataTable>
+            </div>
+            <div id="footer">
+                <span class="info">Please Use Return Ship Lable to Return Faulty Part with this Completed Form Thank You</span>
+                <span class="service-header-text">Service Information</span><span class="fine"> (To be filled out by Service Technician)</span>
+                <div class="box">
+                    <span class="col1">
+                        Date Service Completed ____________________________
+                    
+                    </span>
+                    <span class="col2">
+                        Service Notes <br />
+                        ___________________________________________ <br /> <br />
+                        ___________________________________________ <br /> <br />
+                    </span>
+                </div>
+                <div class="signature">
+                    <span class="signature1">*Customer Signature</span><span class="line"> ____________________________________________________________________________________</span><br /><br />
+                    <span class="signature2">*Tech Signature</span><span class="line">____________________________________________________________________________________</span>
+                </div>
+                
+            </div>
+            
+            
+            
+        </div>
+    </div>
+    
+
+</apex:page>

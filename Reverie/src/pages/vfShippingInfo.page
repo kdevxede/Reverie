@@ -1,0 +1,127 @@
+<apex:page id="thePage" Controller="clsShippingInfo">
+<script>
+    function SaveComponents()
+    {
+        var flag=0;
+        var inputElem = document.getElementsByTagName("input");
+        for(var i=1; i<inputElem.length; i++)
+        {
+            if(inputElem[i].id.indexOf("checkedone")!=-1)
+            {
+                if(inputElem[i].checked)
+                {
+                    flag=flag+1;
+                }
+            }
+        }
+        if(flag ==0)
+        {
+            var r= confirm('You are about to save a Record with No Components');
+            return r;
+        }
+        else
+        {
+            return true;
+        }
+        
+    }
+    
+</script>
+  <apex:form id="theForm">
+      
+      <apex:pageBlock id="thePB" title="Shipping Info" mode="Edit">
+          <apex:pageBlockButtons location="top">
+             
+          </apex:pageBlockButtons>
+          <apex:pageBlockSection id="thePBS1" columns="1" title="Ship To" >
+              <apex:pageBlockSection columns="1">
+                  <apex:outputPanel style="margin-left:40%;">
+                           <!--<apex:commandButton Value="Send Components" onClick="return SendComponents();" rendered="{!isPageEditable}"/>-->
+                           <apex:commandButton Value="Save" onClick="return SaveComponents();" action="{!SaveComponent}"/>
+                          <apex:commandButton Value="Edit" action="{!EditShipTo}" rendered="{!isPageEditable}"/>
+                          <apex:commandButton value="Cancel" action="{!CancelShipTo}"/>
+                  </apex:outputPanel>
+              </apex:pageBlockSection>
+              <apex:pageBlockSection rendered="{!isPageEditable}">
+              <apex:pageBlockSectionItem >
+                  <apex:outputLabel >Customer Info</apex:outputLabel>
+                  <div>{!oTechnician_Assignment.Case__r.Contact.FirstName} {!oTechnician_Assignment.Case__r.Contact.LastName} <br/>{!oTechnician_Assignment.Case__r.Account.BillingStreet} <br/>{!oTechnician_Assignment.Case__r.Account.BillingCity}  {!oTechnician_Assignment.Case__r.Account.BillingState} {!oTechnician_Assignment.Case__r.Account.BillingPostalCode}<br/> {!oTechnician_Assignment.Case__r.Account.Phone}</div>
+              </apex:pageBlockSectionItem>
+             
+              <apex:pageBlockSectionItem rendered="{!isPageEditable}">
+                  <apex:outputLabel >Shipping Info</apex:outputLabel>
+                   <div>{!oTechnician_Assignment.Case__r.Contact.FirstName} {!oTechnician_Assignment.Case__r.Contact.LastName} <br/>{!oTechnician_Assignment.Case__r.Account.ShippingStreet} <br/>{!oTechnician_Assignment.Case__r.Account.ShippingCity}  {!oTechnician_Assignment.Case__r.Account.ShippingState} {!oTechnician_Assignment.Case__r.Account.ShippingPostalCode}<br/> {!oTechnician_Assignment.Case__r.Account.Phone} </div>
+              </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!isPageEditable}">
+                <apex:outputLabel >Purchased From</apex:outputLabel>
+                <div>{!oTechnician_Assignment.Case__r.Asset__r.Purchased_From__c} </div>
+                  
+              </apex:pageBlockSectionItem> </apex:pageBlockSection>
+          </apex:pageBlockSection>
+          <apex:pageBlockSection >
+           <apex:outputPanel rendered="{!NOT(isPageEditable)}">
+            <apex:pageBlockSection >  
+             <apex:pageBlockSectionItem >
+                  <apex:outputLabel >Customer Info</apex:outputLabel>
+                  <div>{!oTechnician_Assignment.Case__r.Contact.FirstName} {!oTechnician_Assignment.Case__r.Contact.LastName} <br/>{!oTechnician_Assignment.Case__r.Account.BillingStreet} <br/>{!oTechnician_Assignment.Case__r.Account.BillingCity}  {!oTechnician_Assignment.Case__r.Account.BillingState} {!oTechnician_Assignment.Case__r.Account.BillingPostalCode}<br/> {!oTechnician_Assignment.Case__r.Account.Phone}</div>
+              </apex:pageBlockSectionItem>
+              </apex:pageBlockSection>  
+            </apex:outputPanel>
+           <apex:outputPanel >
+          <apex:pageBlockSection rendered="{!NOT(isPageEditable)}" columns="1">
+         
+               <apex:inputField value="{!oTechnician_Assignment.Case__r.Contact.FirstName}"/>
+               <apex:inputField value="{!oTechnician_Assignment.Case__r.Contact.LastName}"/>
+               <apex:pageBlockSectionItem >
+               <apex:outputLabel >Shipping Street Address</apex:outputLabel>
+               <apex:inputField value="{!oTechnician_Assignment.Case__r.Account.ShippingStreet}" />
+               </apex:pageBlockSectionItem>
+                <apex:inputField value="{!oTechnician_Assignment.Case__r.Account.ShippingCity}"/>
+                <apex:inputField value="{!oTechnician_Assignment.Case__r.Account.ShippingState}"/>
+                <apex:inputField value="{!oTechnician_Assignment.Case__r.Account.ShippingPostalCode}"/>
+                <!--<apex:inputField value="{!oTechnician_Assignment.Case__r.Account.ShippingCountry}"/>-->
+                <apex:inputField value="{!oTechnician_Assignment.Case__r.Account.Phone}"/>
+         
+          </apex:pageBlockSection>  
+            </apex:outputPanel>
+            
+           
+            
+            </apex:pageBlockSection>
+          <apex:pageBlockSection id="thePBS2" title="Other Info" >
+               <apex:outputField value="{!oShipment_Info.Product__c}"/>
+               <apex:outputField value="{!oShipment_Info.Service_Technician__c}"/>
+               <apex:outputField value="{!oShipment_Info.Concern__c}"/>
+               <apex:outputField value="{!oShipment_Info.Manufacture_Date__c}"/>
+               <apex:outputlabel />
+               <apex:outputField value="{!oShipment_Info.Purchase_Date__c}"/>
+          </apex:pageBlockSection>
+          
+          
+          <apex:pageBlockSection id="thePBS3"  columns="1"  title="Available Components">
+             <apex:pageBlockTable value="{!ShipmentInfoComponents}" var="oShipmentInfoCom">
+                 <apex:column headerValue="Send Component"> 
+                     <apex:inputCheckbox value="{!oShipmentInfoCom.isChecked}" id="checkedone"/>
+                 </apex:column>
+                 <apex:column headerValue="Quantity"> 
+                     <apex:inputField value="{!oShipmentInfoCom.oShipment_Info_Component.Quantity__c}"/>
+                 </apex:column>
+                 <apex:column value="{!oShipmentInfoCom.oComponent.Name}" headerValue="Component"/>
+                 <apex:column headerValue="Description">
+                     <apex:outputField value="{!oShipmentInfoCom.oComponent.Part_Description__c}"/>
+                 </apex:column>
+                 <apex:column headerValue="Status"> 
+                     <apex:inputField value="{!oShipmentInfoCom.oShipment_Info_Component.Status__c}"/>
+                 </apex:column>
+                 <apex:column headerValue="Quantity Received"> 
+                     <apex:inputField value="{!oShipmentInfoCom.oShipment_Info_Component.Quantity_Received__c}"/>
+                 </apex:column>
+                 <apex:column headerValue="Closed">
+                     <apex:inputCheckbox value="{!oShipmentInfoCom.oShipment_Info_Component.Closed__c}"/>
+                 </apex:column>
+              </apex:pageBlockTable>
+          </apex:pageBlockSection>
+         
+      </apex:pageBlock>
+  </apex:form>
+</apex:page>
